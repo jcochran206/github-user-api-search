@@ -1,45 +1,64 @@
 function getGithubUser(textInputVal) {
-    const url = `https://api.github.com/users/${textInputVal}/repos`;
-  
-    const head = {
-      headers: new Headers({
-        'Accept': "application/vnd.github.v3+json",
-      }),
-    };
-  
-    console.log(url);
+  const url = `https://api.github.com/users/${textInputVal}/repos`;
 
-    fetch(url, head)
-      .then((response) => response.json())
-      .then((responseJson) => displayResults(responseJson))
-      .catch((error) => alert("Something went wrong. Try again later."));
-  }
-  
-  function displayResults(responseJson) {
-    console.log(responseJson);
+  const head = {
+    headers: new Headers({
+      // prettier-ignore
+      "Accept": "application/vnd.github.v3+json"
+    }),
+  };
 
-    if (responseJson.status == "error") {
-      $(".results-img").replaceWith(`<p> dog not found</p>`);
-    } else {
-      $(".results-img").html(
-        `<h1>${responseJson[0].owner[0]}</h1>`
-      );
-  
-      $(".results").removeClass("hidden");
-    }
-  }
-  
-  function watchForm() {
-    $("form").submit((event) => {
-      event.preventDefault();
-      let textInputVal = $("#github-search").val();
-      console.log(textInputVal);
-      $("#github-search").val(" ");
-      getGithubUser(textInputVal);
+  console.log(url);
+
+  fetch(url, head)
+    .then((response) => response.json())
+    .then((responseJson) => displayResults(responseJson))
+    .catch((error) => {
+      console.log(error);
+      displayError(error.message, textInputVal);
     });
+}
+
+function displayError(msg, input) {
+  let errorMsg = `
+    <div class="div__error">
+      <h1>User <span>${input}</span> ${msg}</h1>
+    </div>`;
+
+  $(".results-img").html(errorMsg);
+  $(".results").removeClass("hidden");
+}
+
+function displayResults(responseJson) {
+  if (!responseJson[0]) {
+    throw responseJson;
   }
-  
-  $(function () {
-    console.log("App loaded! Waiting for submit!");
-    watchForm();
+
+  console.log(responseJson);
+  let items = responseJson.map((item) => {
+    return `
+        <div>
+          <h1>${item.name}</h1>
+          <h3>${item.html_url}</h3>
+        </div>
+      `;
   });
+
+  $(".results-img").html(`${items.join("")}`);
+  $(".results").removeClass("hidden");
+}
+
+function watchForm() {
+  $("form").submit((event) => {
+    event.preventDefault();
+    let textInputVal = $("#github-search").val();
+    console.log(textInputVal);
+    $("#github-search").val(" ");
+    getGithubUser(textInputVal);
+  });
+}
+
+$(function () {
+  console.log("App loaded! Waiting for submit!");
+  watchForm();
+});

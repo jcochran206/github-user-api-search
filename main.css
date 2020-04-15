@@ -1,16 +1,21 @@
 * {
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: 'Roboto', sans-serif;
-  }
-  
-  .container {
-    max-width: 600px;
-    margin: 0 auto;
-  }
+  box-sizing: border-box;
+}
 
-  .hidden {
-    display: none;
-  }
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.hidden {
+  display: none;
+}
+
+.div__error {
+  border: 5px solid red;
+  padding: 20px;
+}
